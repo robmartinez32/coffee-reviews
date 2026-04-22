@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coffee Review</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #1a1008;
+      color: #2c1a0e;
+      min-height: 100vh;
+      padding: 30px 20px 80px;
+    }
+
+    .page { max-width: 680px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .header { text-align: center; margin-bottom: 32px; }
+    .header .logo { font-size: 38px; margin-bottom: 6px; }
+    .header h1 {
+      font-size: 26px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; color: #f5ead8;
+    }
+    .header p { font-size: 12px; color: #c4a97d; letter-spacing: 1px; margin-top: 4px; }
+    .header .connection-status {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 10px; font-size: 12px; color: #c4a97d;
+    }
+    .header .connection-status .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #c4a97d;
+    }
+    .header .connection-status .dot.connected { background: #6dbf67; }
+    .edit-url-btn {
+      background: none; border: none; color: #c4a97d;
+      font-size: 11px; cursor: pointer; text-decoration: underline;
+      font-family: 'Georgia', serif; padding: 0; margin-left: 4px;
+    }
+    .edit-url-btn:hover { color: #f5ead8; }
+
+    /* ── Setup Banner ── */
+    #setup-banner {
+      background: #3d1f08;
+      border: 1.5px solid #c4a97d;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #f5ead8;
+      line-height: 1.6;
+    }
+    #setup-banner strong { color: #f5c97d; }
+    #setup-banner .dismiss {
+      display: inline-block; margin-top: 10px;
+      background: #c4a97d; color: #1a1008;
+      border: none; border-radius: 20px;
+      padding: 5px 16px; font-size: 12px;
+      cursor: pointer; font-family: 'Georgia', serif;
+      font-weight: 700;
+    }
+    #setup-banner input[type="text"] {
+      width: 100%; margin-top: 8px;
+      padding: 8px 12px; border-radius: 8px;
+      border: 1.5px solid #c4a97d;
+      background: #2c1a0e; color: #f5ead8;
+      font-size: 13px; font-family: 'Georgia', serif;
+      outline: none;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fdf6ec;
+      border-radius: 16px;
+      padding: 28px 30px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    .card-title {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: #8b5e3c;
+      margin-bottom: 18px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid #e8d5b7;
+    }
+
+    /* ── Grids ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* ── Fields ── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: #7a4f2e;
+    }
+    .field input, .field select, .field textarea {
+      border: 1.5px solid #d4b896; border-radius: 8px;
+      padding: 10px 12px; font-size: 14px;
+      font-family: 'Georgia', serif; background: #fffaf4; color: #2c1a0e;
+      transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+      width: 100%; min-width: 0;
+    }
+    .field select {
+      appearance: auto;
+      -webkit-appearance: auto;
+      text-overflow: ellipsis;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: #a0622a;
+      box-shadow: 0 0 0 3px rgba(160,98,42,0.12);
+    }
+    .field textarea { resize: vertical; min-height: 90px; }
+
+    /* ── Toggle (Hot / Cold) ── */
+    .toggle-group {
+      display: flex; border-radius: 8px; overflow: hidden;
+      border: 1.5px solid #d4b896;
+    }
+    .toggle-group input[type="radio"] { display: none; }
+    .toggle-group label {
+      flex: 1; text-align: center;
+      padding: 10px 0; font-size: 14px;
+      cursor: pointer; background: #fffaf4;
+      color: #a0622a; font-family: 'Georgia', serif;
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+    .toggle-group input[type="radio"]:checked + label {
+      background: #a0622a; color: #fff;
+    }
+    .toggle-group label:first-of-type { border-right: 1px solid #d4b896; }
+
+    /* ── Flavor Tags ── */
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+    .tag-btn {
+      padding: 5px 14px; border-radius: 20px;
+      border: 1.5px solid #d4b896; background: #fffaf4;
+      font-size: 12px; font-family: 'Georgia', serif; color: #7a4f2e;
+      cursor: pointer; transition: all 0.15s; user-select: none;
+    }
+    .tag-btn:hover { border-color: #a0622a; background: #f5e8d4; }
+    .tag-btn.active { background: #a0622a; border-color: #a0622a; color: #fff; }
+    .other-tag-input {
+      margin-top: 8px;
+      border: 1.5px solid #d4b896; border-radius: 8px;
+      padding: 8px 12px; font-size: 13px;
+      font-family: 'Georgia', serif; background: #fffaf4; color: #2c1a0e;
+      width: 100%; outline: none;
+      transition: border-color 0.2s;
+    }
+    .other-tag-input:focus { border-color: #a0622a; box-shadow: 0 0 0 3px rgba(160,98,42,0.12); }
+
+    /* ── Sliders ── */
+    .score-list { display: flex; flex-direction: column; gap: 18px; }
+    .score-item { display: flex; flex-direction: column; gap: 8px; }
+    .score-header { display: flex; justify-content: space-between; align-items: baseline; }
+    .score-label {
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: #7a4f2e;
+    }
+    .score-sublabel { font-size: 10px; color: #b8896a; font-style: italic; }
+    .score-value {
+      font-size: 22px; font-weight: 700; color: #a0622a;
+      font-family: 'Georgia', serif;
+    }
+    input[type="range"] {
+      -webkit-appearance: none; width: 100%; height: 6px;
+      border-radius: 3px; outline: none; cursor: pointer;
+      background: linear-gradient(to right, #a0622a 0%, #a0622a 44.4%, #e0c8a8 44.4%, #e0c8a8 100%);
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 18px; height: 18px;
+      border-radius: 50%; background: #a0622a;
+      border: 3px solid #fdf6ec; box-shadow: 0 1px 4px rgba(0,0,0,0.25); cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #a0622a; border: 3px solid #fdf6ec;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25); cursor: pointer;
+    }
+
+    /* ── Overall score bar ── */
+    .overall-row {
+      display: flex; align-items: center; gap: 16px;
+      background: #f5e8d4; border-radius: 10px; padding: 14px 18px;
+      margin-top: 20px;
+    }
+    .overall-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7a4f2e; }
+    .overall-number { font-size: 32px; font-weight: 700; color: #a0622a; line-height: 1; min-width: 48px; }
+    .overall-desc { font-size: 13px; color: #5a3a1a; font-style: italic; }
+    .overall-bar-wrap { flex: 1; height: 8px; background: #e0c8a8; border-radius: 4px; overflow: hidden; }
+    .overall-bar { height: 100%; background: #a0622a; border-radius: 4px; transition: width 0.3s; }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 8px; }
+    .btn {
+      padding: 13px 32px; border-radius: 40px;
+      font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; cursor: pointer; border: none;
+      font-family: 'Georgia', serif; transition: all 0.2s;
+    }
+    .btn-primary { background: #a0622a; color: #fff; box-shadow: 0 2px 8px rgba(160,98,42,0.3); }
+    .btn-primary:hover { background: #7a4f2e; transform: translateY(-1px); }
+    .btn-primary:disabled { background: #c4a97d; cursor: not-allowed; transform: none; }
+    .btn-secondary { background: transparent; color: #f5ead8; border: 2px solid #c4a97d; }
+    .btn-secondary:hover { background: rgba(196,169,125,0.15); }
+
+    /* ── Sending state ── */
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: #2c1a0e; color: #f5ead8;
+      padding: 13px 20px; border-radius: 10px; font-size: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      opacity: 0; transform: translateY(10px);
+      transition: all 0.3s; pointer-events: none; z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #5c1a1a; }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .card { padding: 20px 16px; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">☕</div>
+    <h1>Coffee Review</h1>
+    <p>Tap Save to send your review to the shared sheet</p>
+    <div class="connection-status" id="connection-status">
+      <span class="dot" id="status-dot"></span>
+      <span id="status-text">Not connected</span>
+      <button class="edit-url-btn" onclick="showSetupBanner()">change</button>
+    </div>
+  </div>
+
+  <!-- Setup Banner -->
+  <div id="setup-banner">
+    <strong>⚙️ One-time setup:</strong> Paste your Google Apps Script URL below to connect this form to your Google Sheet.
+    <input type="text" id="script-url-input" placeholder="Paste your Apps Script Web App URL here…" />
+    <br/>
+    <button class="dismiss" onclick="saveScriptUrl()">Save & Connect ✓</button>
+    &nbsp;
+    <a href="#instructions" style="color:#c4a97d; font-size:12px;">Setup instructions ↓</a>
+  </div>
+
+  <!-- Details Card -->
+  <div class="card">
+    <div class="card-title">☕ Coffee Details</div>
+
+    <div style="margin-bottom:14px;">
+      <div class="field">
+        <label>Your Name</label>
+        <input type="text" id="reviewer" placeholder="e.g. Rob" />
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Coffee / Drink Name</label>
+        <input type="text" id="name" placeholder="e.g. Flat White" />
+      </div>
+      <div class="field">
+        <label>Café / Location</label>
+        <input type="text" id="cafe" placeholder="e.g. Blue Bottle, NYC" />
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="date" />
+      </div>
+      <div class="field">
+        <label>Drink Type</label>
+        <select id="type" style="width:100%;">
+          <option value="">Select…</option>
+          <option>Espresso</option>
+          <option>Ristretto</option>
+          <option>Lungo</option>
+          <option>Americano</option>
+          <option>Flat White</option>
+          <option>Cappuccino</option>
+          <option>Latte</option>
+          <option>Macchiato</option>
+          <option>Cortado</option>
+          <option>Cold Brew</option>
+          <option>Drip / Pour-over</option>
+          <option>French Press</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Temperature</label>
+      <div class="toggle-group">
+        <input type="radio" name="temp" id="temp-hot" value="Hot" checked />
+        <label for="temp-hot">🔥 Hot</label>
+        <input type="radio" name="temp" id="temp-cold" value="Cold" />
+        <label for="temp-cold">🧊 Cold</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flavor Notes Card -->
+  <div class="card">
+    <div class="card-title">🍫 Flavor Notes</div>
+    <p style="font-size:12px;color:#8b5e3c;margin-bottom:12px;">Select all you detect</p>
+    <div class="tags-wrap" id="flavor-tags">
+      <div class="tag-btn" onclick="toggleTag(this)">Blueberry</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Cherry</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Citrus</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Strawberry</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Peach</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Caramel</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Chocolate</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Dark Chocolate</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Honey</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Brown Sugar</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Vanilla</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Toffee</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Almond</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Hazelnut</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Toasted</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Smoky</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Floral</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Earthy</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Spice</div>
+      <div class="tag-btn" onclick="toggleTag(this)">Buttery</div>
+    </div>
+    <input type="text" class="other-tag-input" id="flavor-other" placeholder="Other flavor notes… (type freely)" />
+  </div>
+
+  <!-- Scoring Card -->
+  <div class="card">
+    <div class="card-title">📊 Scoring (1–10)</div>
+    <div class="score-list">
+
+      <div class="score-item">
+        <div class="score-header">
+          <div>
+            <div class="score-label">Smell</div>
+            <div class="score-sublabel">Aroma & fragrance</div>
+          </div>
+          <div class="score-value" id="val-smell">5</div>
+        </div>
+        <input type="range" min="1" max="10" value="5" id="smell" oninput="updateScore('smell')" />
+      </div>
+
+      <div class="score-item">
+        <div class="score-header">
+          <div>
+            <div class="score-label">Taste</div>
+            <div class="score-sublabel">Overall flavor & balance</div>
+          </div>
+          <div class="score-value" id="val-taste">5</div>
+        </div>
+        <input type="range" min="1" max="10" value="5" id="taste" oninput="updateScore('taste')" />
+      </div>
+
+      <div class="score-item">
+        <div class="score-header">
+          <div>
+            <div class="score-label">Aftertaste</div>
+            <div class="score-sublabel">Finish & lingering quality</div>
+          </div>
+          <div class="score-value" id="val-aftertaste">5</div>
+        </div>
+        <input type="range" min="1" max="10" value="5" id="aftertaste" oninput="updateScore('aftertaste')" />
+      </div>
+
+      <div class="score-item">
+        <div class="score-header">
+          <div>
+            <div class="score-label">Overall Feel</div>
+            <div class="score-sublabel">Vibe, presentation, experience</div>
+          </div>
+          <div class="score-value" id="val-other">5</div>
+        </div>
+        <input type="range" min="1" max="10" value="5" id="other" oninput="updateScore('other')" />
+      </div>
+
+    </div>
+
+    <!-- Overall -->
+    <div class="overall-row">
+      <div>
+        <div class="overall-label">Score</div>
+        <div class="overall-number" id="overall-number">50</div>
+      </div>
+      <div class="overall-bar-wrap">
+        <div class="overall-bar" id="overall-bar" style="width:50%"></div>
+      </div>
+      <div class="overall-desc" id="overall-desc">Good</div>
+    </div>
+  </div>
+
+  <!-- Final Details Card -->
+  <div class="card">
+    <div class="card-title">💬 Final Details</div>
+    <div style="margin-bottom:14px;">
+      <div class="field" style="margin-bottom:14px;">
+        <label>Would you order again?</label>
+        <select id="reorder" style="width:100%;">
+          <option value="">Select…</option>
+          <option>Absolutely ⭐</option>
+          <option>Yes, for sure</option>
+          <option>Maybe</option>
+          <option>Probably not</option>
+          <option>Definitely not</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Price Paid</label>
+        <input type="text" id="price" placeholder="e.g. $5.50" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="notes" placeholder="Anything else you want to add about this coffee…"></textarea>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="resetForm()">Clear</button>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitReview()">Save Review ✓</button>
+  </div>
+
+  <!-- Instructions -->
+  <div id="instructions" class="card" style="margin-top:40px; background:#2c1a0e; color:#f5ead8;">
+    <div class="card-title" style="color:#c4a97d; border-color:#5a3a1a;">📋 How to Connect to Google Sheets</div>
+    <div style="font-size:13px; line-height:1.8; color:#e8d0b0;">
+      <p style="margin-bottom:12px;">Follow these steps once — then share the HTML file with your friends and all reviews will flow into the same sheet.</p>
+
+      <p><strong style="color:#f5c97d;">Step 1 — Create a Google Sheet</strong><br/>
+      Go to <a href="https://sheets.google.com" target="_blank" style="color:#c4a97d;">sheets.google.com</a> and create a new spreadsheet. Name it something like <em>Coffee Reviews</em>.</p>
+      <br/>
+
+      <p><strong style="color:#f5c97d;">Step 2 — Open Apps Script</strong><br/>
+      In your sheet, click <strong>Extensions → Apps Script</strong>.</p>
+      <br/>
+
+      <p><strong style="color:#f5c97d;">Step 3 — Paste the script</strong><br/>
+      Delete any existing code and paste in the contents of <strong>coffee-review-script.gs</strong> (provided alongside this file). Save it.</p>
+      <br/>
+
+      <p><strong style="color:#f5c97d;">Step 4 — Deploy as Web App</strong><br/>
+      Click <strong>Deploy → New deployment</strong>. Set type to <em>Web app</em>. Set "Execute as" to <em>Me</em> and "Who has access" to <em>Anyone</em>. Click Deploy and authorize.</p>
+      <br/>
+
+      <p><strong style="color:#f5c97d;">Step 5 — Copy the Web App URL</strong><br/>
+      Copy the URL shown after deploying. It looks like:<br/>
+      <code style="background:#1a1008;padding:3px 8px;border-radius:4px;font-size:12px;">https://script.google.com/macros/s/ABC.../exec</code></p>
+      <br/>
+
+      <p><strong style="color:#f5c97d;">Step 6 — Paste it above</strong><br/>
+      Paste that URL into the setup box at the top of this page and click <strong>Save & Connect</strong>. Done! Share this HTML file with your friends — every review they submit goes straight to your sheet.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const SCORES = ['smell','taste','aftertaste','other'];
+  const SCORE_DESCS = [[90,'⭐ Exceptional'],[80,'🏆 Excellent'],[70,'👍 Very Good'],[60,'✓ Good'],[50,'~ Average'],[0,'↓ Below Average']];
+
+  // Load saved script URL
+  // ── Hardcoded URL — update this if your Apps Script URL ever changes ──
+  const HARDCODED_URL = 'https://script.google.com/a/macros/pura.com/s/AKfycbyoOb6Lbxgd-WX8wQjKDZyhSOqrQa0rHAc4MNCvNOugf8DBgwOGjdtK9MYFrLA_ZMcw/exec';
+  let scriptUrl = HARDCODED_URL || sessionStorage.getItem('coffeeScriptUrl') || '';
+  if (scriptUrl) {
+    document.getElementById('setup-banner').style.display = 'none';
+    document.getElementById('script-url-input').value = scriptUrl;
+  }
+  updateConnectionStatus();
+
+  function updateConnectionStatus() {
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+    if (scriptUrl && scriptUrl.startsWith('http')) {
+      dot.classList.add('connected');
+      text.textContent = 'Connected to Google Sheets';
+    } else {
+      dot.classList.remove('connected');
+      text.textContent = 'Not connected — paste your URL above';
+    }
+  }
+
+  function showSetupBanner() {
+    const banner = document.getElementById('setup-banner');
+    banner.style.display = 'block';
+    document.getElementById('script-url-input').value = scriptUrl;
+    banner.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Today's date
+  document.getElementById('date').valueAsDate = new Date();
+
+  // Init sliders
+  SCORES.forEach(f => updateScore(f));
+
+  function saveScriptUrl() {
+    const val = document.getElementById('script-url-input').value.trim();
+    if (!val.startsWith('http')) { showToast('⚠️ Please paste a valid URL', true); return; }
+    scriptUrl = val;
+    sessionStorage.setItem('coffeeScriptUrl', scriptUrl);
+    document.getElementById('setup-banner').style.display = 'none';
+    updateConnectionStatus();
+    showToast('✓ Connected to Google Sheets!');
+  }
+
+  function updateScore(id) {
+    const slider = document.getElementById(id);
+    const val = parseInt(slider.value);
+    document.getElementById('val-' + id).textContent = val;
+    const pct = ((val - 1) / 9 * 100).toFixed(1) + '%';
+    slider.style.background = `linear-gradient(to right, #a0622a 0%, #a0622a ${pct}, #e0c8a8 ${pct}, #e0c8a8 100%)`;
+    updateOverall();
+  }
+
+  function updateOverall() {
+    const vals = SCORES.map(f => parseInt(document.getElementById(f).value));
+    const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
+    const total = Math.round(avg * 10);
+    document.getElementById('overall-number').textContent = total;
+    document.getElementById('overall-bar').style.width = total + '%';
+    const desc = SCORE_DESCS.find(d => total >= d[0]);
+    document.getElementById('overall-desc').textContent = desc ? desc[1] : 'Below Average';
+  }
+
+  function toggleTag(el) { el.classList.toggle('active'); }
+
+  function getActiveTags() {
+    const preset = Array.from(document.querySelectorAll('#flavor-tags .tag-btn.active')).map(t => t.textContent);
+    const other = document.getElementById('flavor-other').value.trim();
+    if (other) preset.push(other);
+    return preset;
+  }
+
+  function getTemp() {
+    return document.querySelector('input[name="temp"]:checked').value;
+  }
+
+  async function submitReview() {
+    const name = document.getElementById('name').value.trim();
+    const reviewer = document.getElementById('reviewer').value.trim();
+    if (!name) { showToast('⚠️ Please enter a coffee name', true); return; }
+    if (!reviewer) { showToast('⚠️ Please enter your name', true); return; }
+    if (!scriptUrl) { showToast('⚠️ Please connect your Google Sheet first', true); return; }
+
+    const scores = {};
+    SCORES.forEach(f => scores[f] = parseInt(document.getElementById(f).value));
+    const overall = Math.round(SCORES.reduce((a,f) => a + scores[f], 0) / SCORES.length * 10);
+
+    const data = {
+      reviewer,
+      name,
+      cafe: document.getElementById('cafe').value,
+      date: document.getElementById('date').value,
+      type: document.getElementById('type').value,
+      temp: getTemp(),
+      flavors: getActiveTags().join(', '),
+      smell: scores.smell,
+      taste: scores.taste,
+      aftertaste: scores.aftertaste,
+      overall_feel: scores.other,
+      overall,
+      reorder: document.getElementById('reorder').value,
+      price: document.getElementById('price').value,
+      notes: document.getElementById('notes').value
+    };
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Saving…';
+
+    try {
+      await fetch(scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      showToast('✓ Review saved to Google Sheets!');
+      resetForm();
+    } catch (e) {
+      showToast('❌ Could not connect. Check your URL.', true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save Review ✓';
+    }
+  }
+
+  function resetForm() {
+    ['name','cafe','price','notes','flavor-other'].forEach(id => document.getElementById(id).value = '');
+    ['type','reorder'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('temp-hot').checked = true;
+    SCORES.forEach(f => { document.getElementById(f).value = 5; updateScore(f); });
+    document.querySelectorAll('#flavor-tags .tag-btn.active').forEach(t => t.classList.remove('active'));
+  }
+
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error' : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
