@@ -440,36 +440,6 @@
   </div>
 
   <!-- Instructions -->
-  <div id="instructions" class="card" style="margin-top:40px; background:#2c1a0e; color:#f5ead8;">
-    <div class="card-title" style="color:#c4a97d; border-color:#5a3a1a;">📋 How to Connect to Google Sheets</div>
-    <div style="font-size:13px; line-height:1.8; color:#e8d0b0;">
-      <p style="margin-bottom:12px;">Follow these steps once — then share the HTML file with your friends and all reviews will flow into the same sheet.</p>
-
-      <p><strong style="color:#f5c97d;">Step 1 — Create a Google Sheet</strong><br/>
-      Go to <a href="https://sheets.google.com" target="_blank" style="color:#c4a97d;">sheets.google.com</a> and create a new spreadsheet. Name it something like <em>Coffee Reviews</em>.</p>
-      <br/>
-
-      <p><strong style="color:#f5c97d;">Step 2 — Open Apps Script</strong><br/>
-      In your sheet, click <strong>Extensions → Apps Script</strong>.</p>
-      <br/>
-
-      <p><strong style="color:#f5c97d;">Step 3 — Paste the script</strong><br/>
-      Delete any existing code and paste in the contents of <strong>coffee-review-script.gs</strong> (provided alongside this file). Save it.</p>
-      <br/>
-
-      <p><strong style="color:#f5c97d;">Step 4 — Deploy as Web App</strong><br/>
-      Click <strong>Deploy → New deployment</strong>. Set type to <em>Web app</em>. Set "Execute as" to <em>Me</em> and "Who has access" to <em>Anyone</em>. Click Deploy and authorize.</p>
-      <br/>
-
-      <p><strong style="color:#f5c97d;">Step 5 — Copy the Web App URL</strong><br/>
-      Copy the URL shown after deploying. It looks like:<br/>
-      <code style="background:#1a1008;padding:3px 8px;border-radius:4px;font-size:12px;">https://script.google.com/macros/s/ABC.../exec</code></p>
-      <br/>
-
-      <p><strong style="color:#f5c97d;">Step 6 — Paste it above</strong><br/>
-      Paste that URL into the setup box at the top of this page and click <strong>Save & Connect</strong>. Done! Share this HTML file with your friends — every review they submit goes straight to your sheet.</p>
-    </div>
-  </div>
 
 </div>
 
@@ -481,7 +451,7 @@
 
   // Load saved script URL
   // ── Hardcoded URL — update this if your Apps Script URL ever changes ──
-  const HARDCODED_URL = 'https://script.google.com/a/macros/pura.com/s/AKfycbyoOb6Lbxgd-WX8wQjKDZyhSOqrQa0rHAc4MNCvNOugf8DBgwOGjdtK9MYFrLA_ZMcw/exec';
+  const HARDCODED_URL = 'https://script.google.com/macros/s/AKfycbyoOb6Lbxgd-WX8wQjKDZyhSOqrQa0rHAc4MNCvNOugf8DBgwOGjdtK9MYFrLA_ZMcw/exec';
   let scriptUrl = HARDCODED_URL || sessionStorage.getItem('coffeeScriptUrl') || '';
   if (scriptUrl) {
     document.getElementById('setup-banner').style.display = 'none';
